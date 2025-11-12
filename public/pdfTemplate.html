@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeleCheck Professional Analysis Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+
+        /* Custom state colors - Australian theme */
+        .state-qld { border-left: 6px solid rgb(37, 99, 235); background-color: rgba(30, 58, 138, 0.2); }
+        .state-nsw { border-left: 6px solid rgb(220, 38, 38); background-color: rgba(153, 27, 27, 0.2); }
+        .state-vic { border-left: 6px solid rgb(147, 51, 234); background-color: rgba(107, 33, 168, 0.2); }
+        .state-wa { border-left: 6px solid rgb(234, 88, 12); background-color: rgba(154, 52, 18, 0.2); }
+        .state-sa { border-left: 6px solid rgb(219, 39, 119); background-color: rgba(157, 23, 77, 0.2); }
+        .state-tas { border-left: 6px solid rgb(22, 163, 74); background-color: rgba(20, 83, 45, 0.2); }
+        .state-act { border-left: 6px solid rgb(79, 70, 229); background-color: rgba(67, 56, 202, 0.2); }
+        .state-nt { border-left: 6px solid rgb(202, 138, 4); background-color: rgba(133, 77, 14, 0.2); }
+
+        /* Remoteness colors - Green & Gold theme */
+        .remoteness-major { border-left: 6px solid rgb(22, 163, 74); background-color: rgba(20, 83, 45, 0.2); }
+        .remoteness-inner { border-left: 6px solid rgb(34, 197, 94); background-color: rgba(21, 128, 61, 0.2); }
+        .remoteness-outer { border-left: 6px solid rgb(202, 138, 4); background-color: rgba(133, 77, 14, 0.2); }
+        .remoteness-remote { border-left: 6px solid rgb(234, 179, 8); background-color: rgba(161, 98, 7, 0.2); }
+        .remoteness-very { border-left: 6px solid rgb(245, 158, 11); background-color: rgba(180, 83, 9, 0.2); }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen font-sans">
+    <div class="max-w-6xl mx-auto p-6 space-y-6">
+
+        <!-- Report Header -->
+        <div class="bg-slate-800 border border-slate-700 rounded-lg p-6">
+            <div class="text-center">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <img src="https://pkixezdlbmzntwekchoq.supabase.co/storage/v1/object/public/URL's/telecheckFAVICON.png"
+                         alt="TeleCheck" class="h-12 w-12">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">{{clinicName}}</h1>
+                        <p class="text-slate-300">Professional Clinic Analysis Report • {{analysisDate}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="grid grid-cols-4 gap-4">
+            <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-white">{{totalPatients}}</div>
+                <div class="text-sm text-slate-300">Total Patients</div>
+            </div>
+            <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-white">{{eligibilityRate}}%</div>
+                <div class="text-sm text-slate-300">Telehealth Eligible</div>
+            </div>
+            <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-white">{{totalActiveDisasters}}</div>
+                <div class="text-sm text-slate-300">Active Disasters - Total in Australia</div>
+            </div>
+            <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-white">{{totalEligiblePatients}}</div>
+                <div class="text-sm text-slate-300">Total Eligible</div>
+            </div>
+        </div>
+
+        <!-- Time since Disaster -->
+        <div class="bg-slate-800 border border-slate-700 rounded-lg">
+            <div class="p-4 border-b border-slate-600">
+                <h2 class="text-lg font-semibold text-white">Time since Disaster (Eligible Patients Only)</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="bg-blue-700 text-blue-100 px-3 py-1 rounded-full text-xs font-medium mb-2 inline-block">Within 12 Months</div>
+                        <div class="text-2xl font-bold text-white">{{within12Months}}</div>
+                        <div class="text-xs text-slate-300">{{within12MonthsPercentage}}% of eligible</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-orange-700 text-orange-100 px-3 py-1 rounded-full text-xs font-medium mb-2 inline-block">1-2 Years</div>
+                        <div class="text-2xl font-bold text-white">{{between12And24Months}}</div>
+                        <div class="text-xs text-slate-300">{{between12And24MonthsPercentage}}% of eligible</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-slate-600 text-slate-100 px-3 py-1 rounded-full text-xs font-medium mb-2 inline-block">Over 2 Years</div>
+                        <div class="text-2xl font-bold text-white">{{over24Months}}</div>
+                        <div class="text-xs text-slate-300">{{over24MonthsPercentage}}% of eligible</div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-slate-600">
+                    <div class="text-center text-sm text-slate-300">
+                        Total: {{totalEligibleFromTime}} eligible patients
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time since Disaster Disclaimer -->
+        <div class="bg-amber-900 border border-amber-700 rounded-lg p-4">
+            <div class="text-sm text-amber-100">
+                <strong>Audit Documentation Guidance:</strong> Time since disaster commencement affects Medicare audit documentation requirements.
+                Recent disasters (&lt;12 months) typically require routine documentation, while longer periods may require enhanced clinical justification and continuity-of-care evidence.
+            </div>
+        </div>
+
+        <!-- State Distribution -->
+        <div class="bg-slate-800 border border-slate-700 rounded-lg">
+            <div class="p-4 border-b border-slate-600">
+                <h2 class="text-lg font-semibold text-white">State Distribution</h2>
+            </div>
+            <div class="p-6 space-y-6">
+                {{#each stateDistribution}}
+                <div class="state-{{stateCode}} pl-6 pr-4 py-4 rounded-r-lg space-y-3">
+                    <!-- State Header with Total -->
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-white text-xl">{{stateName}}</span>
+                        <div class="text-right">
+                            <div class="font-bold text-white text-lg">{{total}} Total</div>
+                            <div class="text-sm text-slate-300">({{percentage}}% of patients)</div>
+                        </div>
+                    </div>
+
+                    <!-- Disaster Eligible Count -->
+                    <div class="flex items-center justify-between pl-4 py-2 bg-green-900/20 rounded">
+                        <span class="text-green-400 font-medium">Disaster Eligible</span>
+                        <span class="font-semibold text-green-400 text-lg">{{eligible}}</span>
+                    </div>
+
+                    <!-- Remoteness Breakdown -->
+                    {{#if remoteness}}
+                    <div class="pl-4 space-y-2 bg-slate-700/30 rounded p-3">
+                        <div class="text-sm font-medium text-slate-200 mb-2">Remoteness Breakdown:</div>
+                        {{#each remoteness}}
+                        <div class="flex items-center justify-between text-sm py-1">
+                            <span class="text-slate-300 pl-2">• {{category}}</span>
+                            <span class="text-white font-medium">{{count}}</span>
+                        </div>
+                        {{/each}}
+                    </div>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+        <!-- Australia Summary - National Remoteness Breakdown -->
+        <div class="bg-slate-800 border-2 border-green-600/30 bg-gradient-to-r from-green-900/10 to-yellow-900/10 rounded-lg">
+            <div class="p-4 border-b border-slate-600">
+                <h2 class="text-lg font-semibold text-white">Australia Summary - Remoteness Distribution</h2>
+            </div>
+            <div class="p-6 space-y-3">
+                {{#each nationalRemotenessBreakdown}}
+                <div class="remoteness-{{remotenessCode}} pl-6 pr-4 py-3 rounded-r-lg">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-white text-lg">{{remotenessName}}</span>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-white">{{count}}</div>
+                            <div class="text-sm text-slate-300">{{percentage}}% of patients</div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+        <!-- Data Disclaimer -->
+        <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
+            <div class="text-sm text-slate-300">
+                <strong>Data Analysis Only:</strong> This report provides factual data analysis based on Australian Government disaster declarations and postcode classifications.
+                No financial, medical, or business advice is provided. Data reflects the analysis date of {{analysisDate}}.
+            </div>
+        </div>
+
+        <!-- Professional Footer -->
+        <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 text-center">
+            <div class="text-sm text-slate-300 space-y-2">
+                <p><strong>Professional Guidance:</strong> This analysis provides Medicare disaster eligibility patterns to support your clinic planning and help ensure your patients can access appropriate telehealth services where eligible.</p>
+                <p><strong>Verification Recommended:</strong> While this data is compiled from official government sources, we encourage you to verify eligibility details for specific patient circumstances and disaster declarations.</p>
+                <p class="text-xs text-slate-400 mt-4">Generated by TeleCheck Professional • Medicare Disaster Eligibility Intelligence • www.telecheck.com.au</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

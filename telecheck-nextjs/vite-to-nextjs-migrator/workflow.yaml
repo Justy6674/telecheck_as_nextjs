@@ -1,0 +1,277 @@
+version: "1"
+
+config:
+  timeout: 1200  # 20 minutes for complete migration
+  continue_on_error: false
+  parallel: false
+
+nodes:
+  - id: prepare-nextjs
+    name: Prepare Next.js project
+    type: automatic
+    steps:
+      - name: Copy source files from Vite app
+        run: |
+          echo "📁 Copying source files from astro-assist-check..."
+          cp -r ../astro-assist-check/src ./src || true
+          cp -r ../astro-assist-check/public ./public || true
+          cp ../astro-assist-check/.env ./.env || true
+          cp ../astro-assist-check/.env.local ./.env.local || true
+          echo "✅ Source files copied"
+
+      - name: Initialize Next.js project
+        run: |
+          if [ ! -f "package.json" ] || ! grep -q "next" package.json; then
+            echo "🚀 Initializing Next.js project..."
+            npx create-next-app@latest . --typescript --tailwind --app --no-src-dir --import-alias "@/*" --yes
+          else
+            echo "✅ Next.js already initialized"
+          fi
+
+      - name: Install required dependencies
+        run: |
+          echo "📦 Installing dependencies..."
+          npm install @supabase/supabase-js @tanstack/react-query @lemonsqueezy/lemonsqueezy.js
+          npm install lucide-react clsx tailwind-merge class-variance-authority
+          npm install @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-tabs
+          npm install date-fns sonner jspdf xlsx
+          echo "✅ Dependencies installed"
+
+  - id: transform-routing
+    name: Transform React Router to Next.js routing
+    type: automatic
+    depends_on: [prepare-nextjs]
+    steps:
+      - name: Apply router transformation
+        js-ast-grep:
+          js_file: "./scripts/router-transform.ts"
+          base_path: "./src"
+          language: "typescript"
+          include:
+            - "**/*.tsx"
+            - "**/*.ts"
+          exclude:
+            - "**/node_modules/**"
+            - "**/*.test.ts"
+            - "**/*.spec.ts"
+
+  - id: transform-imports
+    name: Transform import statements
+    type: automatic
+    depends_on: [transform-routing]
+    steps:
+      - id: apply-imports-transform
+        name: Apply imports transformation
+        js-ast-grep:
+          js_file: "./scripts/imports-transform.ts"
+          base_path: "./src"
+          language: "typescript"
+          include:
+            - "**/*.tsx"
+            - "**/*.ts"
+          exclude:
+            - "**/node_modules/**"
+
+  - id: transform-components
+    name: Transform components for Next.js
+    type: automatic
+    depends_on: [transform-imports]
+    steps:
+      - id: apply-component-transform
+        name: Apply component transformations
+        js-ast-grep:
+          js_file: "./scripts/component-transform.ts"
+          base_path: "./src"
+          language: "typescript"
+          include:
+            - "**/*.tsx"
+          exclude:
+            - "**/node_modules/**"
+
+  - id: migrate-structure
+    name: Migrate to Next.js app directory structure
+    type: automatic
+    depends_on: [transform-components]
+    steps:
+      - id: run-page-migration
+        name: Migrate pages to app directory
+        command: |
+          echo "🔄 Migrating pages to Next.js app directory..."
+          node ./scripts/migrate-pages.js
+          echo "✅ Pages migrated"
+
+      - id: move-api-routes
+        name: Move Supabase Edge Functions to API routes
+        command: |
+          echo "🔄 Setting up API routes..."
+          mkdir -p app/api
+
+          # Create API route for clinic analysis
+          cat > app/api/clinic-analysis/route.ts << 'EOF'
+          import { NextRequest, NextResponse } from 'next/server';
+          import { createClient } from '@supabase/supabase-js';
+
+          const supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+          );
+
+          export async function POST(request: NextRequest) {
+            try {
+              const body = await request.json();
+              // Implement clinic analysis logic here
+              return NextResponse.json({ success: true });
+            } catch (error) {
+              return NextResponse.json(
+                { error: 'Internal server error' },
+                { status: 500 }
+              );
+            }
+          }
+          EOF
+
+          echo "✅ API routes created"
+
+  - id: update-config
+    name: Update configuration files
+    type: automatic
+    depends_on: [migrate-structure]
+    steps:
+      - id: create-next-config
+        name: Create Next.js configuration
+        command: |
+          echo "📝 Creating Next.js configuration..."
+          cat > next.config.js << 'EOF'
+          /** @type {import('next').NextConfig} */
+          const nextConfig = {
+            images: {
+              domains: ['localhost', 'telecheck.com.au'],
+            },
+            env: {
+              NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+              NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            },
+            // Handle external dependencies
+            webpack: (config) => {
+              config.externals = {
+                ...config.externals,
+                'xlsx': 'XLSX',
+                'mapbox-gl': 'mapboxgl',
+              };
+              return config;
+            },
+          };
+
+          module.exports = nextConfig;
+          EOF
+          echo "✅ Next.js config created"
+
+      - id: update-env-vars
+        name: Update environment variables
+        command: |
+          echo "🔐 Updating environment variables..."
+          if [ -f ".env" ]; then
+            # Rename Vite env vars to Next.js format
+            sed -i '' 's/VITE_/NEXT_PUBLIC_/g' .env
+            sed -i '' 's/VITE_/NEXT_PUBLIC_/g' .env.local 2>/dev/null || true
+            echo "✅ Environment variables updated"
+          fi
+
+      - id: update-tsconfig
+        name: Update TypeScript configuration
+        command: |
+          echo "📝 Updating TypeScript config..."
+          cat > tsconfig.json << 'EOF'
+          {
+            "compilerOptions": {
+              "target": "es5",
+              "lib": ["dom", "dom.iterable", "esnext"],
+              "allowJs": true,
+              "skipLibCheck": true,
+              "strict": false,
+              "noImplicitAny": false,
+              "strictNullChecks": false,
+              "forceConsistentCasingInFileNames": true,
+              "noEmit": true,
+              "esModuleInterop": true,
+              "module": "esnext",
+              "moduleResolution": "node",
+              "resolveJsonModule": true,
+              "isolatedModules": true,
+              "jsx": "preserve",
+              "incremental": true,
+              "plugins": [
+                {
+                  "name": "next"
+                }
+              ],
+              "paths": {
+                "@/*": ["./src/*"]
+              }
+            },
+            "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+            "exclude": ["node_modules"]
+          }
+          EOF
+          echo "✅ TypeScript config updated"
+
+  - id: finalize
+    name: Finalize migration
+    type: automatic
+    depends_on: [update-config]
+    steps:
+      - id: copy-components
+        name: Ensure components are in correct location
+        command: |
+          echo "📁 Organizing components..."
+          # Ensure shadcn components are in the right place
+          if [ -d "src/components" ]; then
+            cp -r src/components ./components 2>/dev/null || true
+          fi
+
+          # Copy utilities
+          if [ -d "src/utils" ]; then
+            cp -r src/utils ./utils 2>/dev/null || true
+          fi
+
+          # Copy hooks
+          if [ -d "src/hooks" ]; then
+            cp -r src/hooks ./hooks 2>/dev/null || true
+          fi
+
+          # Copy lib
+          if [ -d "src/lib" ]; then
+            cp -r src/lib ./lib 2>/dev/null || true
+          fi
+
+          echo "✅ Components organized"
+
+      - id: format-code
+        name: Format code with Prettier
+        command: |
+          echo "✨ Formatting code..."
+          npx prettier --write "app/**/*.{ts,tsx,js,jsx}" 2>/dev/null || true
+          npx prettier --write "components/**/*.{ts,tsx,js,jsx}" 2>/dev/null || true
+          echo "✅ Code formatted"
+
+      - id: final-message
+        name: Migration complete
+        command: |
+          echo "
+          ╔════════════════════════════════════════════════════════════╗
+          ║                 🎉 MIGRATION COMPLETE! 🎉                  ║
+          ╠════════════════════════════════════════════════════════════╣
+          ║                                                            ║
+          ║  Your Vite app has been migrated to Next.js!              ║
+          ║                                                            ║
+          ║  Next steps:                                               ║
+          ║  1. Review the migrated code in the app/ directory        ║
+          ║  2. Test the application: npm run dev                     ║
+          ║  3. Fix any remaining TypeScript errors                   ║
+          ║  4. Update Supabase Edge Functions to API routes          ║
+          ║  5. Test all features thoroughly                          ║
+          ║                                                            ║
+          ║  The same Supabase backend is preserved and ready!        ║
+          ║                                                            ║
+          ╚════════════════════════════════════════════════════════════╝
+          "

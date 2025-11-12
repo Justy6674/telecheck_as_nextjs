@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Test Email</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h1 style="color: #ef4444; margin-bottom: 24px;">🧪 TeleCheck Email Test</h1>
+        <div id="status" style="font-size: 18px; padding: 20px; border-radius: 8px; background: #fef3c7; border: 1px solid #f59e0b; color: #92400e;">
+            Preparing to send test email to downscale@icloud.com...
+        </div>
+        <div style="margin-top: 24px; font-size: 14px; color: #6b7280;">
+            This will send a test of the professional welcome email with the dark theme design.
+        </div>
+    </div>
+
+    <script>
+        const { createClient } = supabase;
+        const supabaseClient = createClient(
+            'https://pkixezdlbmzntwekchoq.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBraXhlemRsYm16bnR3ZWtjaG9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5MzU2NDcsImV4cCI6MjA3MTUxMTY0N30.wIzA1ULnhjmh8-hkERhbVnpvQzvnzJD_4J-3FxCw1K4'
+        );
+
+        const welcomeEmailHTML = \`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to TeleCheck</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #e2e8f0;
+            background-color: #0f172a;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -10px rgba(239, 68, 68, 0.3);
+        }
+        .header {
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            padding: 32px 24px;
+            text-align: center;
+            border-bottom: 3px solid #ef4444;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        .tagline {
+            color: #94a3b8;
+            font-size: 16px;
+            margin: 0;
+        }
+        .content {
+            padding: 32px 24px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #f8fafc;
+            margin-bottom: 24px;
+        }
+        .section {
+            margin-bottom: 28px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ef4444;
+            margin-bottom: 16px;
+            border-left: 4px solid #ef4444;
+            padding-left: 16px;
+        }
+        .feature-list, .process-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .feature-list li, .process-list li {
+            background-color: #334155;
+            margin-bottom: 12px;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 3px solid #ef4444;
+            color: #e2e8f0;
+        }
+        .feature-list li::before, .process-list li::before {
+            content: "✓";
+            color: #ef4444;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        .cta-section {
+            background-color: #334155;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin: 24px 0;
+            border: 2px solid #ef4444;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 12px 0;
+            transition: all 0.3s ease;
+        }
+        .emphasis {
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #cbd5e1;
+        }
+        .emphasis-strong {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        .disclaimer {
+            background-color: #0f172a;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 32px 0;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #94a3b8;
+        }
+        .disclaimer-title {
+            color: #ef4444;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .footer {
+            background-color: #0f172a;
+            padding: 24px;
+            text-align: center;
+            border-top: 1px solid #374151;
+        }
+        .footer-text {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0;
+        }
+        .footer-link {
+            color: #ef4444;
+            text-decoration: none;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 0 16px;
+            }
+            .header, .content {
+                padding: 24px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">TeleCheck</div>
+            <p class="tagline">Australian Telehealth Disaster Verification</p>
+        </div>
+        
+        <div class="content">
+            <p class="greeting">Dear colleague,</p>
+            
+            <p style="color: #e2e8f0; font-size: 16px; margin-bottom: 24px;">
+                <strong style="color: #ef4444;">🧪 THIS IS A TEST EMAIL</strong> - Thank you for subscribing to TeleCheck.
+            </p>
+            
+            <p style="color: #cbd5e1; font-size: 16px; margin-bottom: 24px;">
+                The purpose of this tool is straightforward: to help clinicians quickly and confidently check whether telehealth can be billed under Medicare in the context of Government-declared disasters (Category C and above).
+            </p>
+            
+            <div class="section">
+                <h2 class="section-title">What TeleCheck provides</h2>
+                <ul class="feature-list">
+                    <li>A postcode-based check against official disaster declarations.</li>
+                    <li>Links directly to Government disaster information sources.</li>
+                    <li>Pro-forma documentation templates (adaptable for your notes and workflows).</li>
+                    <li>A clear "guide only" output that reminds all users final eligibility rests with the treating clinician.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Why it matters</h2>
+                <ul class="feature-list">
+                    <li>Protects patients' ongoing access to telehealth when disaster exemptions apply.</li>
+                    <li>Reduces billing uncertainty and potential Medicare compliance risks.</li>
+                    <li>Supports fairness and transparency in how exemptions are applied across practices.</li>
+                </ul>
+            </div>
+            
+            <div class="cta-section">
+                <h3 style="color: #f8fafc; margin-bottom: 16px;">Ready to get started?</h3>
+                <a href="https://telecheck.com.au/members" class="cta-button">Access Your Dashboard</a>
+                <p style="color: #94a3b8; margin-top: 16px; font-size: 14px;">
+                    Your TeleCheck Professional subscription is now active
+                </p>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">How to use</h2>
+                <ul class="process-list">
+                    <li>Enter the patient's postcode on the open page to check disaster eligibility.</li>
+                    <li>Review the linked Government resources.</li>
+                    <li>Adapt the provided documentation templates in your clinical record.</li>
+                    <li>Continue to apply your professional judgement in line with AHPRA standards and Medicare rules.</li>
+                </ul>
+            </div>
+            
+            <div class="emphasis">
+                <h3 class="emphasis-strong">Feedback welcome</h3>
+                <p style="margin: 12px 0 0 0;">
+                    TeleCheck is designed with patients at the centre but built for clinicians like you. Your input helps refine the tool so it remains practical, compliant, and safe. Please share your suggestions and experiences with us.
+                </p>
+            </div>
+        </div>
+        
+        <div class="disclaimer">
+            <div class="disclaimer-title">Important Disclaimer</div>
+            <p style="margin: 0;">
+                TeleCheck is a guidance tool only. It does not provide medical advice, diagnosis, or treatment. TeleCheck does not guarantee Medicare eligibility or rebates. All billing decisions remain the responsibility of the treating clinician, in accordance with AHPRA standards and current Medicare rules. TeleCheck is not affiliated with the Australian Government, Medicare, or any other health authority. No patient data is stored or shared.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p class="footer-text">
+                Need assistance? Contact us at <a href="mailto:support@telecheck.com.au" class="footer-link">support@telecheck.com.au</a>
+            </p>
+            <p class="footer-text" style="margin-top: 16px;">
+                © 2025 TeleCheck. Built for Australian healthcare professionals.
+            </p>
+        </div>
+    </div>
+</body>
+</html>\`;
+
+        async function sendTestEmail() {
+            try {
+                const statusDiv = document.getElementById('status');
+                statusDiv.innerHTML = '📧 Sending test email...';
+                statusDiv.style.background = '#ddd6fe';
+                statusDiv.style.borderColor = '#8b5cf6';
+                statusDiv.style.color = '#5b21b6';
+                
+                const { data, error } = await supabaseClient.functions.invoke('send-welcome-email', {
+                    body: {
+                        to: 'downscale@icloud.com',
+                        subject: '🧪 TEST: Welcome to TeleCheck – supporting clinicians with disaster telehealth eligibility',
+                        html: welcomeEmailHTML
+                    }
+                });
+
+                if (error) {
+                    statusDiv.innerHTML = \`❌ Error: \${error.message}\`;
+                    statusDiv.style.background = '#fecaca';
+                    statusDiv.style.borderColor = '#ef4444';
+                    statusDiv.style.color = '#dc2626';
+                    console.error('Error sending test email:', error);
+                } else {
+                    statusDiv.innerHTML = \`✅ <strong>Test email sent successfully to downscale@icloud.com!</strong><br><small>Check your inbox (and spam folder) to see the beautiful dark theme design.</small>\`;
+                    statusDiv.style.background = '#bbf7d0';
+                    statusDiv.style.borderColor = '#10b981';
+                    statusDiv.style.color = '#047857';
+                    console.log('Test email sent:', data);
+                }
+            } catch (error) {
+                const statusDiv = document.getElementById('status');
+                statusDiv.innerHTML = \`❌ Error: \${error.message}\`;
+                statusDiv.style.background = '#fecaca';
+                statusDiv.style.borderColor = '#ef4444';
+                statusDiv.style.color = '#dc2626';
+                console.error('Error:', error);
+            }
+        }
+
+        // Send the email when the page loads
+        setTimeout(sendTestEmail, 1000);
+    </script>
+</body>
+</html>

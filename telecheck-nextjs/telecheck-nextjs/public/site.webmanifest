@@ -1,0 +1,28 @@
+{
+    "name": "TeleCheck - Australian Telehealth Disaster Verification",
+    "short_name": "TeleCheck",
+    "description": "Instant verification of MBS telehealth eligibility during Australian disasters. Real-time postcode checking for healthcare providers.",
+    "icons": [
+        {
+            "src": "/telecheck-favicon.png",
+            "sizes": "500x500",
+            "type": "image/png"
+        },
+        {
+            "src": "/telecheck-favicon.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/telecheck-favicon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#0ea5e9",
+    "background_color": "#0f172a",
+    "display": "standalone",
+    "orientation": "portrait",
+    "scope": "/",
+    "start_url": "/"
+}
