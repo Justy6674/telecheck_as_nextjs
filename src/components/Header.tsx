@@ -9,7 +9,6 @@ import { ComingSoonDialog } from "@/components/ComingSoonDialog";
 import { SupportButton } from "@/components/SupportButton";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, LogOut, User, Settings } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,55 +19,58 @@ import {
 export const Header = () => {
   const [comingSoonOpen, setComingSoonOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const isMobile = useIsMobile();
   const router = useRouter();
   const pathname = usePathname();
 
-  const linkClass = (href: string) =>
-    `text-sm transition-colors ${pathname === href ? 'text-red-400 font-medium' : 'text-white/90 hover:text-red-400'}`;
+  const linkClass = (href: string) => {
+    const isActive =
+      href === "/"
+        ? pathname === "/"
+        : pathname.startsWith(href);
 
-  const NavItems = () => (
-    <>
-      <Link href="/" className={linkClass("/")} onClick={() => setMobileMenuOpen(false)}>
-        Home
-      </Link>
-      <Link href="/telehealth-rules" className={linkClass("/telehealth-rules")} onClick={() => setMobileMenuOpen(false)}>
-        Telehealth Rules
-      </Link>
-      <Link href="/how-to-use" className={linkClass("/how-to-use")} onClick={() => setMobileMenuOpen(false)}>
-        How to Use
-      </Link>
-      <Link href="/faq" className={linkClass("/faq")} onClick={() => setMobileMenuOpen(false)}>
-        FAQ
-      </Link>
-      <Link href="/about" className={linkClass("/about")} onClick={() => setMobileMenuOpen(false)}>
-        About
-      </Link>
-      <Link href="/pricing" className={linkClass("/pricing")} onClick={() => setMobileMenuOpen(false)}>
-        Pricing
-      </Link>
-    </>
-  );
+    return [
+      "text-sm font-medium transition-colors tracking-tight",
+      isActive ? "text-white" : "text-slate-200/80 hover:text-white",
+    ].join(" ");
+  };
+
+  const navLinks = [
+    { href: "/", label: "Home" },
+    { href: "/check-eligibility", label: "For Patients" },
+    { href: "/telehealth-rules", label: "Telehealth Rules" },
+    { href: "/how-to-use", label: "How to Use" },
+    { href: "/faq", label: "FAQ" },
+    { href: "/about", label: "About" },
+    { href: "/pricing", label: "Pricing" },
+  ];
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-slate-700/50 bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-slate-900/80">
+      <header className="sticky top-0 z-50 border-b border-white/5 bg-[#050b16]/85 backdrop-blur supports-[backdrop-filter]:bg-[#050b16]/75">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <Logo className="h-6 w-6" />
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold text-white">TeleCheck</h1>
-              <p className="text-xs text-white/80 hidden sm:block">Australian Telehealth Disaster Verification</p>
+          <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <Logo className="h-8 w-8" />
+            <div className="leading-tight">
+              <span className="text-lg sm:text-xl font-semibold text-white tracking-tight">
+                TeleCheck
+              </span>
+              <p className="text-xs text-slate-200/70 hidden sm:block">
+                Australian Telehealth Disaster Verification
+              </p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <NavItems />
+            {navLinks.map((link) => (
+              <Link key={link.href} href={link.href} className={linkClass(link.href)}>
+                {link.label}
+              </Link>
+            ))}
             <SupportButton
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="text-white/90 hover:text-red-400"
+              className="border-white/10 text-slate-200/90 hover:text-white hover:border-white/30"
             >
               Help
             </SupportButton>
@@ -77,7 +79,7 @@ export const Header = () => {
             <Button
               size="sm"
               variant="outline"
-              className="border-foreground/20 text-foreground hover:bg-foreground/10"
+              className="border-white/10 text-slate-100 hover:border-white/30 hover:bg-white/5"
               data-o-anonymous
               data-o-auth="1"
               data-mode="popup"
@@ -88,7 +90,7 @@ export const Header = () => {
             <Button
               size="sm"
               variant="default"
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-400 hover:to-red-400 text-white shadow-lg shadow-red-500/30"
               data-o-anonymous
               data-o-auth="1"
               data-mode="popup"
@@ -102,7 +104,11 @@ export const Header = () => {
             {/* Account dropdown - only shown when logged in */}
             <DropdownMenu data-o-authenticated>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="border-foreground/20 text-foreground hover:bg-foreground/10">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-white/10 text-slate-100 hover:border-white/30 hover:bg-white/5"
+                >
                   <User className="h-4 w-4 mr-2" />
                   <span data-o-member="FirstName">Account</span>
                 </Button>
@@ -128,28 +134,34 @@ export const Header = () => {
           <div className="md:hidden">
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="p-2 text-foreground hover:bg-foreground/10">
+                <Button variant="ghost" size="sm" className="p-2 text-slate-100 hover:bg-white/10">
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-slate-900 border-slate-700">
+              <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-[#050b16] border-white/10 text-slate-100">
                 <div className="flex flex-col gap-6 mt-6">
                   <div className="flex flex-col gap-4">
-                    <NavItems />
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={linkClass(link.href)}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
                   </div>
                   <div className="border-t pt-6 space-y-4">
-                    <SupportButton
-                      variant="outline"
-                      className="w-full"
-                    >
-                      Get Help
+                    <SupportButton variant="outline" className="w-full border-white/10">
+                      Help
                     </SupportButton>
 
                     {/* Mobile anonymous buttons */}
                     <Button
                       variant="outline"
-                      className="w-full"
+                      className="w-full border-white/10 text-slate-100"
                       data-o-anonymous
                       data-o-auth="1"
                       data-mode="popup"
@@ -160,7 +172,7 @@ export const Header = () => {
                     </Button>
                     <Button
                       variant="default"
-                      className="w-full bg-red-600 hover:bg-red-700"
+                      className="w-full bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-400 hover:to-red-400 text-white"
                       data-o-anonymous
                       data-o-auth="1"
                       data-mode="popup"
@@ -175,7 +187,7 @@ export const Header = () => {
                     {/* Mobile authenticated buttons */}
                     <Button
                       variant="outline"
-                      className="w-full"
+                      className="w-full border-white/10 text-slate-100"
                       data-o-authenticated
                       onClick={() => {
                         setMobileMenuOpen(false);
@@ -186,7 +198,7 @@ export const Header = () => {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full"
+                      className="w-full border-white/10 text-slate-100"
                       data-o-authenticated
                       data-o-logout-link
                       onClick={() => setMobileMenuOpen(false)}

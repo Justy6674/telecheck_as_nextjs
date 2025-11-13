@@ -125,17 +125,11 @@ All colours MUST be HSL.
   body::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background:
-      radial-gradient(circle at 20% 50%, hsl(216 28% 25%) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, hsl(216 28% 28%) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, hsl(216 28% 22%) 0%, transparent 50%);
-    background-size: auto, auto, auto;
-    opacity: 0.9;
-    mix-blend-mode: multiply;
+      radial-gradient(circle at 0% 0%, hsl(217 91% 60% / 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 75% 10%, hsl(350 83% 60% / 0.1) 0%, transparent 55%),
+      radial-gradient(circle at 50% 90%, hsl(220 80% 60% / 0.08) 0%, transparent 60%);
     pointer-events: none;
     z-index: -1;
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { HelpCircle, MessageCircle } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 
 interface SupportButtonProps {
   variant?: React.ComponentProps<typeof Button>['variant'];
@@ -36,7 +36,7 @@ export const SupportButton: React.FC<SupportButtonProps> = ({
       onClick={openSupportTicket}
       className={`inline-flex items-center gap-2 ${className}`}
     >
-      {showIcon && <MessageCircle className="h-4 w-4" />}
+      {showIcon && <HelpCircle className="h-4 w-4" />}
       {children}
     </Button>
   );

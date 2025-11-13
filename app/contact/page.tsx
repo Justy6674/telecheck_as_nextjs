@@ -1,93 +1,82 @@
-import React from 'react';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
-import { Mail, MapPin, Phone } from 'lucide-react';
+"use client";
 
-export const Contact = () => {
+import Link from "next/link";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Mail, Building2, AlertTriangle } from "lucide-react";
+
+export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-[#050b16] text-slate-100">
       <Header />
-      <main className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-8">Contact Us</h1>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-8">
-              <h2 className="text-2xl font-semibold text-white mb-6">Get in Touch</h2>
-              
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <Mail className="h-6 w-6 text-red-400 mt-1 flex-shrink-0" />
-                   <div>
-                     <h3 className="text-white font-medium">Email</h3>
-                     <p className="text-slate-300">
-                       <a href="mailto:support@telecheck.com.au" className="text-red-400 hover:text-red-300 transition-colors">
-                         support@telecheck.com.au
-                       </a>
-                     </p>
-                     <p className="text-slate-300 text-sm mt-1">For support and inquiries</p>
-                   </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <MapPin className="h-6 w-6 text-red-400 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-white font-medium">Business Details</h3>
-                     <p className="text-slate-300">
-                       Justin Black<br />
-                       ABN: 12048148174<br />
-                       Australia
-                     </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <Phone className="h-6 w-6 text-red-400 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-white font-medium">Emergency</h3>
-                    <p className="text-slate-300">
-                      For medical emergencies, call 000 immediately.<br />
-                      TeleCheck is not for emergency situations.
-                    </p>
-                  </div>
-                </div>
-              </div>
+
+      <main className="px-4 py-16 sm:py-20">
+        <section className="mx-auto max-w-3xl text-center">
+          <h1 className="text-3xl font-semibold text-white sm:text-4xl">Contact Us</h1>
+          <p className="mt-3 text-base text-slate-300 sm:text-lg">
+            We're here to help. Reach out for support, product questions, or feedback.
+          </p>
+        </section>
+
+        <section className="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-3">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur">
+            <Mail className="mx-auto h-8 w-8 text-emerald-300" />
+            <h2 className="mt-4 text-lg font-semibold text-white">Email</h2>
+            <p className="mt-2 text-sm text-slate-300">For support and inquiries</p>
+            <Button
+              asChild
+              variant="outline"
+              className="mt-4 w-full rounded-2xl border-white/20 bg-white/10 text-sm font-semibold text-white hover:border-white/40 hover:bg-white/15"
+            >
+              <Link href="mailto:telecheckaustralia@gmail.com">telecheckaustralia@gmail.com</Link>
+            </Button>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur">
+            <Building2 className="mx-auto h-8 w-8 text-blue-300" />
+            <h2 className="mt-4 text-lg font-semibold text-white">Business Details</h2>
+            <p className="mt-2 text-sm text-slate-300">Justin Black</p>
+            <p className="text-sm text-slate-300">ABN: 12048148174</p>
+            <p className="mt-1 text-sm text-slate-300">Australia</p>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur">
+            <AlertTriangle className="mx-auto h-8 w-8 text-amber-300" />
+            <h2 className="mt-4 text-lg font-semibold text-white">Emergency</h2>
+            <p className="mt-2 text-sm text-slate-300">
+              For medical emergencies, call 000 immediately.
+            </p>
+            <p className="mt-1 text-sm text-slate-300">
+              TeleCheck is not for emergency situations.
+            </p>
+          </div>
+        </section>
+
+        <section className="mx-auto mt-16 max-w-4xl rounded-3xl border border-white/10 bg-white/5 p-8 text-center backdrop-blur">
+          <h2 className="text-xl font-semibold text-white sm:text-2xl">Support Hours</h2>
+          <div className="mt-4 grid gap-6 sm:grid-cols-3">
+            <div>
+              <p className="text-sm font-semibold text-white">Technical Support</p>
+              <p className="mt-1 text-sm text-slate-300">Available through the members dashboard.</p>
             </div>
-            
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-8">
-              <h2 className="text-2xl font-semibold text-white mb-6">Support Hours</h2>
-              
-              <div className="space-y-4 text-slate-300">
-                <div>
-                  <h3 className="text-white font-medium">Technical Support</h3>
-                  <p>Available through member dashboard</p>
-                </div>
-                
-                <div>
-                  <h3 className="text-white font-medium">Response Time</h3>
-                  <p>We aim to respond to all inquiries within 24-48 hours</p>
-                </div>
-                
-                <div>
-                  <h3 className="text-white font-medium">Professional Support</h3>
-                  <p>Clinical guidance and professional questions handled by qualified healthcare professionals</p>
-                </div>
-              </div>
-              
-              <div className="mt-8 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                <h3 className="text-red-400 font-medium mb-2">Important Notice</h3>
-                <p className="text-sm text-slate-300">
-                  TeleCheck provides information only and does not replace professional medical advice. 
-                  Always consult with qualified healthcare professionals for medical decisions.
-                </p>
-              </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Response Time</p>
+              <p className="mt-1 text-sm text-slate-300">We aim to respond within 24–48 hours.</p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Professional Support</p>
+              <p className="mt-1 text-sm text-slate-300">Handled by qualified healthcare professionals.</p>
             </div>
           </div>
-        </div>
+          <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-slate-300">
+            TeleCheck provides information only and does not replace professional medical advice. Always consult qualified
+            healthcare professionals for medical decisions.
+          </div>
+        </section>
       </main>
+
       <Footer />
     </div>
   );
-};
-
-export default Contact;
+}
