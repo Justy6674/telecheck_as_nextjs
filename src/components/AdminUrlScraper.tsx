@@ -65,7 +65,10 @@ export const AdminUrlScraper = () => {
         .limit(1);
 
       if (logs && logs.length > 0) {
-        setLastRun(new Date(logs[0].started_at));
+        const startedAt = logs[0].started_at;
+        if (startedAt) {
+          setLastRun(new Date(startedAt));
+        }
       }
     } catch (error) {
       console.error('Error loading progress:', error);

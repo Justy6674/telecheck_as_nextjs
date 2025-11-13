@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { HelpCircle, MessageCircle } from 'lucide-react';
 
 interface SupportButtonProps {
-  variant?: 'primary' | 'outline' | 'ghost';
+  variant?: React.ComponentProps<typeof Button>['variant'];
   size?: 'sm' | 'default' | 'lg';
   showIcon?: boolean;
   children?: React.ReactNode;

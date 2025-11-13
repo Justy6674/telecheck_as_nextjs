@@ -18,6 +18,10 @@ export interface OutsetaUser {
 // Get current authenticated user from Outseta
 export const getOutsetaUser = (): OutsetaUser | null => {
   try {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
     if (!window.Outseta) {
       return null;
     }
@@ -43,6 +47,9 @@ export const getOutsetaUser = (): OutsetaUser | null => {
 
 // Check if user is authenticated
 export const isAuthenticated = (): boolean => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
   return getOutsetaUser() !== null;
 };
 
@@ -57,7 +64,7 @@ export const isAdmin = (userEmail?: string): boolean => {
 
 // Login using Outseta's no-code approach
 export const login = () => {
-  if (window.Outseta && window.Outseta.auth) {
+  if (typeof window !== 'undefined' && window.Outseta && window.Outseta.auth) {
     window.Outseta.auth.open({
       widgetMode: 'login'
     });
@@ -66,7 +73,7 @@ export const login = () => {
 
 // Logout using Outseta's no-code approach
 export const logout = () => {
-  if (window.Outseta && window.Outseta.auth) {
+  if (typeof window !== 'undefined' && window.Outseta && window.Outseta.auth) {
     window.Outseta.auth.logout();
   }
 };
@@ -74,6 +81,11 @@ export const logout = () => {
 // Wait for Outseta to load
 export const waitForOutseta = (): Promise<boolean> => {
   return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve(false);
+      return;
+    }
+
     let attempts = 0;
     const maxAttempts = 50;
 

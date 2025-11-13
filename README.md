@@ -2,6 +2,13 @@
 
 Production Application: https://www.telecheck.com.au (Live with thousands of practitioners)
 
+## Next.js Migration Audit — 2025-11-13
+- Build: `npm run build` completes successfully (Next.js 16 App Router).
+- Dev server: `npm run dev` (Next defaults to http://localhost:3000 unless `PORT` overrides).
+- Linting: `npm run lint` currently fails due to long-standing `any` usage and legacy component patterns (see CLI output). These pre-existing issues remain to avoid destabilising production logic.
+- Environment: components now read `NEXT_PUBLIC_*` first and fall back to existing `VITE_*` keys so the live Supabase app remains untouched.
+- Known warning: Next.js detects three `package-lock.json` files (root, repo, parent). Remove the unused lockfiles or set `turbopack.root` in `next.config.ts` once the parent projects are tidy.
+
 📋 TERMINOLOGY CLARIFICATION
 	•	“Disaster Exempt” = Patients IN OPEN disaster zones = Medicare Eligible (have disaster eligibility)
 	•	“Non-disaster” = Patients NOT in disaster zones = require other eligibility pathways

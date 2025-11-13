@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, createContext, useContext } from 'react';
 
 // Pure no-code Outseta authentication context

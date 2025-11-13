@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -97,7 +99,7 @@ export const useSessionManager = () => {
 
       // Insert or update session
       const { data, error } = await supabase
-        .from('user_sessions')
+        .from('user_sessions' as any)
         .upsert(sessionData, { 
           onConflict: 'user_id,ip_address,user_agent'
         })
@@ -106,19 +108,20 @@ export const useSessionManager = () => {
 
       if (error) throw error;
 
-      const metadata = data.metadata as any;
+      const sessionRecord = (data as any) ?? {};
+      const metadata = sessionRecord.metadata as any;
       const currentSessionInfo: SessionInfo = {
-        id: data.id,
+        id: sessionRecord.id,
         device: `${browser} on ${os}`,
         browser: metadata?.browser || browser,
         os: metadata?.os || os,
         location: metadata?.location || location,
-        ip: data.ip_address || ip,
-        last_active: data.last_activity,
-        created_at: data.created_at,
+        ip: sessionRecord.ip_address || ip,
+        last_active: sessionRecord.last_activity,
+        created_at: sessionRecord.created_at,
         current: true,
         timezone: metadata?.timezone || timezone,
-        user_agent: data.user_agent
+        user_agent: sessionRecord.user_agent
       };
 
       setCurrentSession(currentSessionInfo);
@@ -133,7 +136,7 @@ export const useSessionManager = () => {
 
     try {
       const { data, error } = await supabase
-        .from('user_sessions')
+        .from('user_sessions' as any)
         .select('*')
         .eq('user_id', user.id)
         .eq('is_active', true)
@@ -141,7 +144,8 @@ export const useSessionManager = () => {
 
       if (error) throw error;
 
-      const sessionList: SessionInfo[] = data.map(session => {
+      const sessionData = Array.isArray(data) ? (data as any[]) : [];
+      const sessionList: SessionInfo[] = sessionData.map(session => {
         const metadata = session.metadata as any;
         return {
           id: session.id,
@@ -171,7 +175,7 @@ export const useSessionManager = () => {
 
     try {
       const { error } = await supabase
-        .from('user_sessions')
+        .from('user_sessions' as any)
         .update({ 
           is_active: false,
           ended_at: new Date().toISOString(),
@@ -194,7 +198,7 @@ export const useSessionManager = () => {
 
     try {
       const { error } = await supabase
-        .from('user_sessions')
+        .from('user_sessions' as any)
         .update({ 
           is_active: false,
           ended_at: new Date().toISOString(),

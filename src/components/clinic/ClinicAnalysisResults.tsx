@@ -487,7 +487,7 @@ export const ClinicAnalysisResults: React.FC<AnalysisResultsProps> = ({
   console.log('Medicare count:', realResults?.medicare?.length || 0);
   console.log('Operations count:', realResults?.operations?.length || 0);
   console.log('Business count:', realResults?.business?.length || 0);
-  if (realResults?.geographic?.length > 0) {
+  if (Array.isArray(realResults?.geographic) && realResults.geographic.length > 0) {
     console.log('Sample geographic metric:', realResults.geographic[0]);
   }
   const eligibleCount = analysisResult?.eligible_count || 0;

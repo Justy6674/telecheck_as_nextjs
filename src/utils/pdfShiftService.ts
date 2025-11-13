@@ -48,9 +48,12 @@ export class PDFShiftService {
   private baseUrl = 'https://api.pdfshift.io/v3/convert/pdf';
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_PDFSHIFT_API_KEY;
+    this.apiKey =
+      process.env.NEXT_PUBLIC_PDFSHIFT_API_KEY ??
+      process.env.VITE_PDFSHIFT_API_KEY ??
+      '';
     if (!this.apiKey) {
-      throw new Error('VITE_PDFSHIFT_API_KEY environment variable is required');
+      throw new Error('PDFSHIFT API key environment variable is required');
     }
     console.log('✅ PDFShift API Key loaded:', this.apiKey.substring(0, 10) + '...');
   }

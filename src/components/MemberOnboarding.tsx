@@ -414,11 +414,17 @@ const MemberOnboarding: React.FC<MemberOnboardingProps> = ({ onComplete, userEma
   const handleComplete = async () => {
     setIsCompleting(true);
     try {
-      // Mark onboarding as completed in user profile
+      const { data: authData } = await supabase.auth.getUser();
+      const userId = authData.user?.id;
+
+      if (!userId) {
+        throw new Error('Unable to determine current user id');
+      }
+
       const { error } = await supabase
         .from('profiles')
         .update({ updated_at: new Date().toISOString() })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        .eq('user_id', userId);
 
       if (error) {
         console.error('Error updating onboarding status:', error);

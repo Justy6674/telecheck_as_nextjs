@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { PostcodeChecker } from "@/components/PostcodeChecker";
 import { SavedChecks } from "@/components/SavedChecks";
 import { CustomerFeedback } from "@/components/CustomerFeedback";
@@ -8,9 +8,9 @@ import { ManageBilling } from "@/components/ManageBilling";
 import MemberOnboarding from "@/components/MemberOnboarding";
 import { Button } from "@/components/ui/button";
 import { LogOut, Settings, Shield, BarChart3, User, FileText } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Logo } from "@/components/Logo";
-import { AdminPanel } from "@/components/AdminPanel";
+import AdminPanel from "@/components/AdminPanel";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -27,14 +27,14 @@ declare global {
   }
 }
 
-const Members = () => {
+const MembersContent = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
   const [userEmail, setUserEmail] = useState("");
 
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Check admin status from Supabase profiles table
   useEffect(() => {
@@ -53,12 +53,14 @@ const Members = () => {
 
         // Check if current user email matches any admin
         if (window.Outseta) {
-          window.Outseta.getUser().then((user) => {
+          window.Outseta.getUser().then((user: any) => {
             if (user?.Email) {
               setUserEmail(user.Email);
               // Check if user email is in admin profiles
               const isAdminUser = adminProfiles?.some(profile =>
-                profile.email.toLowerCase() === user.Email.toLowerCase()
+                profile?.email && user.Email
+                  ? profile.email.toLowerCase() === user.Email.toLowerCase()
+                  : false
               );
               console.log('🔧 Admin check (Supabase):', {
                 userEmail: user.Email,
@@ -67,7 +69,7 @@ const Members = () => {
               });
               setIsAdmin(isAdminUser || false);
             }
-          }).catch((error) => {
+          }).catch((error: unknown) => {
             console.log('No user found:', error);
           });
         }
@@ -114,9 +116,9 @@ const Members = () => {
           const showOnboardingParam = searchParams.get('onboarding') === 'true';
           if (showOnboardingParam) {
             console.log('🔧 Removing onboarding URL parameter');
-            const newUrl = new URL(window.location);
+            const newUrl = new URL(window.location.href);
             newUrl.searchParams.delete('onboarding');
-            window.history.replaceState({}, '', newUrl);
+            window.history.replaceState({}, '', newUrl.toString());
           }
           return;
         }
@@ -128,9 +130,9 @@ const Members = () => {
           setShowOnboarding(true);
 
           // Remove URL parameter immediately
-          const newUrl = new URL(window.location);
+          const newUrl = new URL(window.location.href);
           newUrl.searchParams.delete('onboarding');
-          window.history.replaceState({}, '', newUrl);
+          window.history.replaceState({}, '', newUrl.toString());
         } else {
           console.log('✅ EMERGENCY: No URL parameter - skipping onboarding to unblock user');
           setShowOnboarding(false);
@@ -181,7 +183,7 @@ const Members = () => {
             <Button
               variant="blue"
               size="sm"
-              onClick={() => navigate('/clinic-analysis')}
+              onClick={() => router.push('/clinic-analysis')}
             >
               <BarChart3 className="h-4 w-4 mr-2" />
               Clinic Analysis
@@ -189,7 +191,7 @@ const Members = () => {
             <Button
               variant="blue"
               size="sm"
-              onClick={() => navigate('/reports')}
+              onClick={() => router.push('/reports')}
             >
               <FileText className="h-4 w-4 mr-2" />
               My Reports
@@ -198,7 +200,7 @@ const Members = () => {
               <Button
                 variant="default"
                 size="sm"
-                onClick={() => navigate('/admin')}
+                onClick={() => router.push('/admin')}
                 className="bg-primary hover:bg-primary/90"
               >
                 <Shield className="h-4 w-4 mr-2" />
@@ -215,7 +217,7 @@ const Members = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => navigate('/settings')}>
+                <DropdownMenuItem onClick={() => router.push('/settings')}>
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </DropdownMenuItem>
@@ -239,7 +241,7 @@ const Members = () => {
                     if (window.Outseta && window.Outseta.auth) {
                       window.Outseta.auth.logout();
                     }
-                    navigate('/');
+                    router.push('/');
                   }}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
@@ -303,5 +305,17 @@ const Members = () => {
     </div>
   );
 };
+
+const Members = () => (
+  <Suspense
+    fallback={
+      <div className="flex min-h-screen items-center justify-center bg-slate-900 text-white">
+        Loading member dashboard...
+      </div>
+    }
+  >
+    <MembersContent />
+  </Suspense>
+);
 
 export default Members;

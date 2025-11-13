@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -15,7 +17,7 @@ const getSessionTimeout = () => {
 };
 
 export const useInactivityTimeout = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const warningRef = useRef<NodeJS.Timeout | null>(null);
@@ -32,11 +34,11 @@ export const useInactivityTimeout = () => {
         variant: "destructive",
       });
 
-      navigate('/auth');
+      router.replace('/auth');
     } catch (error) {
       console.error('Error signing out:', error);
     }
-  }, [navigate, toast]);
+  }, [router, toast]);
 
   const resetTimeout = useCallback(() => {
     // Clear existing timeouts

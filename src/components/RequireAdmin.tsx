@@ -1,5 +1,7 @@
+'use client';
+
 import { ReactNode, useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -12,6 +14,7 @@ export const RequireAdmin = ({ children }: RequireAdminProps) => {
   const { user, loading: authLoading } = useAuth();
   const [isVerifiedAdmin, setIsVerifiedAdmin] = useState<boolean | null>(null);
   const [verifying, setVerifying] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const verifyAdminAccess = async () => {
@@ -65,6 +68,12 @@ export const RequireAdmin = ({ children }: RequireAdminProps) => {
     }
   }, [user, authLoading]);
 
+  useEffect(() => {
+    if (!authLoading && !verifying && (!user || !isVerifiedAdmin)) {
+      router.replace('/');
+    }
+  }, [authLoading, verifying, user, isVerifiedAdmin, router]);
+
   // Show loading state while checking authentication
   if (authLoading || verifying) {
     return (
@@ -79,14 +88,9 @@ export const RequireAdmin = ({ children }: RequireAdminProps) => {
     );
   }
 
-  // EMERGENCY BYPASS: Direct admin access
-  // Immediately return admin panel for debugging
-  console.log('🚨 EMERGENCY ADMIN BYPASS ACTIVE');
-  return <>{children}</>;
-
   // Redirect to home if not authenticated or not admin
   if (!user || !isVerifiedAdmin) {
-    return <Navigate to="/" replace />;
+    return null;
   }
 
   // User is authenticated and verified as admin server-side

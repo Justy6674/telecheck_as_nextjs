@@ -1,5 +1,7 @@
+'use client';
+
 import React from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Settings, HelpCircle } from "lucide-react";
@@ -39,10 +41,10 @@ export const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-3 relative z-30">
-              <li><Link to="/about" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">About</Link></li>
-              <li><Link to="/how-to-use" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">How to Use</Link></li>
-              <li><Link to="/faq" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">FAQ</Link></li>
-              <li><Link to="/pricing" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Pricing</Link></li>
+              <li><Link href="/about" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">About</Link></li>
+              <li><Link href="/how-to-use" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">How to Use</Link></li>
+              <li><Link href="/faq" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">FAQ</Link></li>
+              <li><Link href="/pricing" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Pricing</Link></li>
             </ul>
           </div>
 
@@ -50,9 +52,9 @@ export const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Resources</h3>
             <ul className="space-y-3 relative z-30">
-              <li><Link to="/telehealth-rules" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Telehealth Rules</Link></li>
-              <li><Link to="/contact" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Contact</Link></li>
-              <li><Link to="/members" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Members Portal</Link></li>
+              <li><Link href="/telehealth-rules" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Telehealth Rules</Link></li>
+              <li><Link href="/contact" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Contact</Link></li>
+              <li><Link href="/members" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Members Portal</Link></li>
               <li>
                 <button
                   onClick={openSupportTicket}
@@ -68,10 +70,10 @@ export const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Legal</h3>
             <ul className="space-y-3 relative z-30">
-              <li><Link to="/privacy" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Terms of Service</Link></li>
-              <li><Link to="/disclaimers" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Disclaimers</Link></li>
-              <li><Link to="/refund-policy" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Refund Policy</Link></li>
+              <li><Link href="/privacy" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Terms of Service</Link></li>
+              <li><Link href="/disclaimers" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Disclaimers</Link></li>
+              <li><Link href="/refund-policy" className="relative z-40 block text-slate-300 hover:text-white transition-colors cursor-pointer underline decoration-dotted hover:decoration-solid">Refund Policy</Link></li>
             </ul>
           </div>
         </div>

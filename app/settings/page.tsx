@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { useOutsetaUser } from '@/hooks/useOutsetaUser';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -50,8 +50,8 @@ interface AppPreferences {
   };
 }
 
-export default function Settings() {
-  const navigate = useNavigate();
+export default function SettingsPage() {
+  const router = useRouter();
   const { user, isLoading } = useOutsetaUser();
   const [loading, setLoading] = useState(false);
   const [preferences, setPreferences] = useState<AppPreferences>({
@@ -95,14 +95,16 @@ export default function Settings() {
 
     try {
       // Load from profiles table metadata
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('metadata')
         .eq('email', user.Email)
         .maybeSingle();
+ 
+      const metadata = data?.metadata as any;
 
-      if (data?.metadata?.app_preferences) {
-        setPreferences(data.metadata.app_preferences);
+      if (metadata?.app_preferences) {
+        setPreferences(metadata.app_preferences);
       } else {
         // Set detected timezone as default
         setPreferences(prev => ({
@@ -125,9 +127,9 @@ export default function Settings() {
         .from('profiles')
         .upsert({
           email: user.Email,
-          metadata: { app_preferences: preferences },
+          metadata: { app_preferences: preferences } as any,
           updated_at: new Date().toISOString()
-        });
+        } as any);
 
       if (error) throw error;
       toast.success('Preferences saved successfully');
@@ -219,7 +221,7 @@ export default function Settings() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate('/members')}
+              onClick={() => router.push('/members')}
               className="text-white hover:bg-white/10"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />

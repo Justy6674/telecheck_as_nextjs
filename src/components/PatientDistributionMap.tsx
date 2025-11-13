@@ -186,7 +186,7 @@ export const PatientDistributionMap: React.FC<PatientDistributionMapProps> = ({
     });
 
     // Add click handler
-    map.current.on('click', 'patient-points', (e) => {
+    map.current.on('click', 'patient-points', (e: any) => {
       const features = e.features;
       if (!features || features.length === 0) return;
 

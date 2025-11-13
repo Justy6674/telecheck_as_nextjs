@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/integrations/supabase/client';
 import { useOutsetaUser } from '@/hooks/useOutsetaUser';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,8 +54,8 @@ interface SavedReport {
   };
 }
 
-const Reports = () => {
-  const navigate = useNavigate();
+export default function ReportsPage() {
+  const router = useRouter();
   const { user } = useOutsetaUser();
   const { toast } = useToast();
   const [reports, setReports] = useState<SavedReport[]>([]);
@@ -76,27 +76,41 @@ const Reports = () => {
       console.log('🔍 DEBUGGING Reports - user?.Name:', user?.Name);
       console.log('🔍 DEBUGGING Reports - full user object:', user);
 
+      if (!user?.Email) {
+        console.warn('No Outseta email available. Skipping report fetch.');
+        setLoading(false);
+        return;
+      }
+
       // ✅ NEW: Query saved_clinic_reports table directly using user_id
       const { data: profileData } = await supabase
         .from('profiles')
         .select('id')
-        .eq('email', user?.Email)
+        .eq('email', user.Email)
         .single();
+
+      const userId = profileData?.id;
+      if (!userId) {
+        console.warn('No profile ID found for user. Skipping saved reports fetch.');
+        setReports([]);
+        setLoading(false);
+        return;
+      }
 
       const { data: reportsData, error } = await supabase
         .from('saved_clinic_reports')
         .select('*')
-        .eq('user_id', profileData?.id)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
       console.log('🔍 DEBUGGING Reports - query result:', { reportsData, error });
 
       if (error) throw error;
 
-      const savedReports = reportsData || [];
+      const savedReports = (reportsData ?? []) as unknown as SavedReport[];
       console.log('🔍 DEBUGGING Reports - found', savedReports.length, 'reports');
 
-      setReports(savedReports as SavedReport[] || []);
+      setReports(savedReports);
     } catch (error) {
       console.error('Error fetching reports:', error);
       toast({
@@ -117,7 +131,7 @@ const Reports = () => {
       });
 
       // Use simple jsPDF generator in VIEW mode
-      const analysisData = (report as any).raw_data || report.analysis_data || {};
+      const analysisData = (report as any).raw_data || (report as any).analysis_data || {};
       const pdfUrl = generateSimplePDF(report.clinic_name, analysisData, true);
 
       if (pdfUrl) {
@@ -147,7 +161,7 @@ const Reports = () => {
       });
 
       // Use simple jsPDF generator in DOWNLOAD mode
-      const analysisData = (report as any).raw_data || report.analysis_data || {};
+      const analysisData = (report as any).raw_data || (report as any).analysis_data || {};
       generateSimplePDF(report.clinic_name, analysisData, false);
 
       toast({
@@ -221,7 +235,7 @@ const Reports = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Please sign in to view your reports</h2>
-          <Button onClick={() => navigate('/auth')}>Sign In</Button>
+          <Button onClick={() => router.push('/auth')}>Sign In</Button>
         </div>
       </div>
     );
@@ -236,7 +250,7 @@ const Reports = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate('/members')}
+              onClick={() => router.push('/members')}
               className="text-white hover:text-cyan-400"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -288,7 +302,7 @@ const Reports = () => {
                 {searchTerm ? 'Try a different search term' : 'Generate your first report from the Clinic Analysis page'}
               </p>
               {!searchTerm && (
-                <Button onClick={() => navigate('/clinic-analysis')}>
+                <Button onClick={() => router.push('/clinic-analysis')}>
                   Go to Clinic Analysis
                 </Button>
               )}
@@ -334,7 +348,7 @@ const Reports = () => {
                         Eligible
                       </div>
                       <div className="text-green-400 font-semibold">
-                        {(report.eligible_percentage || report.eligibility_percentage || 0).toFixed(1)}%
+                        {(report.eligible_percentage ?? (report as any).eligibility_percentage ?? 0).toFixed(1)}%
                       </div>
                     </div>
                   </div>
@@ -403,5 +417,3 @@ const Reports = () => {
     </div>
   );
 };
-
-export default Reports;

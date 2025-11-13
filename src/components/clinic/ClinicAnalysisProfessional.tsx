@@ -99,6 +99,25 @@ interface AnalysisResult {
   clinicName?: string;
 }
 
+const buildReportPayload = (result: AnalysisResult) => ({
+  totalPatients: result.totalPatients ?? 0,
+  totalActiveDisasters: result.totalActiveDisasters ?? 0,
+  totalEligiblePatients: result.totalEligiblePatients ?? result.eligibleCount ?? 0,
+  disasterRiskBreakdown: {
+    active: result.disasterRiskBreakdown?.active ?? 0,
+    high: result.disasterRiskBreakdown?.high ?? 0,
+    medium: result.disasterRiskBreakdown?.medium ?? 0,
+    low: result.disasterRiskBreakdown?.low ?? 0,
+    none: result.disasterRiskBreakdown?.none ?? 0,
+  },
+  stateDistribution: result.stateDistribution ?? {},
+  remotenessDistribution: result.remotenessDistribution ?? {},
+  nationalRemotenessBreakdown: result.nationalRemotenessBreakdown,
+  timeBasedAnalysis: result.timeBasedAnalysis,
+  eligibilityRate: result.eligibilityRate ?? result.eligiblePercentage ?? 0,
+  analysedAt: result.analysedAt ?? new Date().toISOString(),
+} satisfies Parameters<typeof saveClinicReport>[1]);
+
 export const ClinicAnalysisProfessional = () => {
   console.log('🎯 NEW PDFSHIFT VERSION LOADED AT:', new Date().toISOString(), '🎯');
 
@@ -151,13 +170,14 @@ export const ClinicAnalysisProfessional = () => {
   useEffect(() => {
     if (analysisResult) {
       console.log('🔍 ANALYSIS RESULT STATE UPDATED:', analysisResult);
-      console.log('🔍 DISASTER BREAKDOWN IN STATE:', analysisResult.disasterRiskBreakdown);
+      console.log('🔍 DISASTER BREAKDOWN IN STATE:', analysisResult?.disasterRiskBreakdown);
+      const breakdown = analysisResult?.disasterRiskBreakdown ?? { active: 0, high: 0, medium: 0, low: 0 };
       console.log('🔍 VALUES BEING DISPLAYED:', {
-        active: analysisResult.disasterRiskBreakdown.active,
-        high: analysisResult.disasterRiskBreakdown.high,
-        medium: analysisResult.disasterRiskBreakdown.medium,
-        low: analysisResult.disasterRiskBreakdown.low,
-        none: analysisResult.disasterRiskBreakdown.none
+        active: breakdown.active,
+        high: breakdown.high,
+        medium: breakdown.medium,
+        low: breakdown.low,
+        none: 'none' in breakdown ? (breakdown as Record<string, number>).none : 0
       });
     } else {
       console.log('🔍 ANALYSIS RESULT IS NULL/UNDEFINED');
@@ -357,7 +377,7 @@ export const ClinicAnalysisProfessional = () => {
 
   // Save Report
   const saveReport = async () => {
-    const userEmail = user?.Email || user?.email || '';
+    const userEmail = user?.Email ?? '';
     if (!analysisResult || !clinicName || !userEmail) {
       toast({
         title: 'Save Failed',
@@ -370,9 +390,11 @@ export const ClinicAnalysisProfessional = () => {
     setIsSaving(true);
 
     try {
+      const normalizedResult = buildReportPayload(analysisResult);
+
       const saveResult = await saveClinicReport(
         clinicName,
-        analysisResult,
+        normalizedResult,
         userEmail
       );
 
@@ -405,9 +427,21 @@ export const ClinicAnalysisProfessional = () => {
         description: 'Creating your professional clinic analysis report...',
       });
 
+      const reportPayload = buildReportPayload(analysisResult);
+      const pdfData = {
+        totalPatients: reportPayload.totalPatients,
+        totalEligiblePatients: reportPayload.totalEligiblePatients,
+        eligibilityRate: reportPayload.eligibilityRate,
+        totalActiveDisasters: reportPayload.totalActiveDisasters,
+        stateDistribution: reportPayload.stateDistribution,
+        timeBasedAnalysis: reportPayload.timeBasedAnalysis,
+        nationalRemotenessBreakdown: reportPayload.nationalRemotenessBreakdown,
+        analysedAt: reportPayload.analysedAt,
+      };
+
       // Use simple jsPDF generator (same as Reports page)
       // This generates the PDF instantly in the browser
-      generateSimplePDF(clinicName, analysisResult, false);
+      generateSimplePDF(clinicName, pdfData, false);
 
       toast({
         title: 'PDF Downloaded',
@@ -688,10 +722,15 @@ export const ClinicAnalysisProfessional = () => {
             <CardContent>
               <div className="space-y-6">
                 {analysisResult?.stateDistribution && Object.entries(analysisResult.stateDistribution)
-                  .filter(([, stateData]) => (typeof stateData === 'object' && stateData?.total > 0))
-                  .sort(([,a], [,b]) => (b as any).total - (a as any).total)
                   .map(([state, stateData]) => {
-                    const data = stateData as any;
+                    const data = (typeof stateData === 'object' && stateData !== null)
+                      ? (stateData as Record<string, any>)
+                      : { total: typeof stateData === 'number' ? stateData : 0 };
+                    return { state, data };
+                  })
+                  .filter(({ data }) => (data.total ?? 0) > 0)
+                  .sort((a, b) => (b.data.total ?? 0) - (a.data.total ?? 0))
+                  .map(({ state, data }) => {
                     const percentage = (analysisResult.totalPatients || 0) > 0 ?
                       ((data.total / (analysisResult.totalPatients || 1)) * 100).toFixed(1) : '0';
 
@@ -791,7 +830,7 @@ export const ClinicAnalysisProfessional = () => {
           <div className="flex gap-4 justify-center">
             <Button
               onClick={saveReport}
-              disabled={isSaving || !(user?.Email || user?.email)}
+              disabled={isSaving || !user?.Email}
               className="bg-green-600 hover:bg-green-700"
             >
               {isSaving ? (

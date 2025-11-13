@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { getOutsetaUser, isAdmin as checkIsAdmin, waitForOutseta, type OutsetaUser } from '@/utils/outsetaAuth';
 

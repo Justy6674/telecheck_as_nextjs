@@ -434,3 +434,5 @@ export const HowToUse = () => {
     </div>
   );
 };
+
+export default HowToUse;

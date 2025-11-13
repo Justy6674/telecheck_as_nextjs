@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Table,
   TableBody,
@@ -75,13 +76,14 @@ export function UserSubscriptionManager() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setUsers(data || []);
+      setUsers((data ?? []) as unknown as User[]);
     } catch (error) {
       console.error('Error fetching users:', error);
+      const message = error instanceof Error ? error.message : 'Unexpected error occurred';
       toast({
-        title: "Error",
-        description: "Failed to fetch users",
-        variant: "destructive",
+        title: 'Error',
+        description: message,
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);

@@ -297,7 +297,7 @@ export const ClinicAnalysisWizard: React.FC<ClinicAnalysisWizardProps> = ({
             <Button onClick={addPostcodeToPractitioner} size="sm">Add</Button>
           </div>
 
-          {newPractitioner.postcodes?.length > 0 && (
+          {Array.isArray(newPractitioner.postcodes) && newPractitioner.postcodes.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {newPractitioner.postcodes.map((pc, idx) => (
                 <Badge key={idx} variant="secondary">{pc}</Badge>
@@ -308,7 +308,7 @@ export const ClinicAnalysisWizard: React.FC<ClinicAnalysisWizardProps> = ({
 
         <Button
           onClick={addPractitioner}
-          disabled={!newPractitioner.name || !newPractitioner.postcodes?.length}
+          disabled={!newPractitioner.name || !Array.isArray(newPractitioner.postcodes) || newPractitioner.postcodes.length === 0}
           className="w-full"
         >
           <Plus className="w-4 h-4 mr-2" />

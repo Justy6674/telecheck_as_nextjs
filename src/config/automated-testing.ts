@@ -164,20 +164,27 @@ export const storageConfig = {
 };
 
 // Integration with monitoring services
+const getEnvVar = (nextVar: string, viteVar: string) => {
+  return process.env[nextVar] ?? process.env[viteVar] ?? '';
+};
+
 export const monitoringIntegrations = {
   sentry: {
     enabled: false, // Enable when Sentry is configured
-    dsn: import.meta.env.VITE_SENTRY_DSN || '',
-    environment: import.meta.env.MODE || 'development'
+    dsn: getEnvVar('NEXT_PUBLIC_SENTRY_DSN', 'VITE_SENTRY_DSN'),
+    environment: process.env.NODE_ENV || 'development'
   },
   datadog: {
     enabled: false,
-    apiKey: import.meta.env.VITE_DATADOG_API_KEY || '',
-    appKey: import.meta.env.VITE_DATADOG_APP_KEY || ''
+    apiKey: getEnvVar('NEXT_PUBLIC_DATADOG_API_KEY', 'VITE_DATADOG_API_KEY'),
+    appKey: getEnvVar('NEXT_PUBLIC_DATADOG_APP_KEY', 'VITE_DATADOG_APP_KEY')
   },
   slack: {
     enabled: false,
-    webhookUrl: import.meta.env.VITE_SLACK_WEBHOOK_URL || '',
+    webhookUrl: getEnvVar(
+      'NEXT_PUBLIC_SLACK_WEBHOOK_URL',
+      'VITE_SLACK_WEBHOOK_URL'
+    ),
     channel: '#telecheck-alerts'
   }
 };

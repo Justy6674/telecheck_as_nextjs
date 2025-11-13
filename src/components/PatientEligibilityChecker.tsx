@@ -104,6 +104,14 @@ const PatientEligibilityChecker = () => {
 
   const handlePrintReport = () => {
     const reportData = generateReportData();
+    const disasterInfo = reportData.disaster ?? {
+      agrn: 'N/A',
+      title: 'No active declaration',
+      hazardType: 'N/A',
+      startDate: 'N/A',
+      endDate: 'N/A'
+    };
+    const officialLink = reportData.officialLink ?? 'https://www.disasterassist.gov.au/';
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
@@ -138,12 +146,12 @@ const PatientEligibilityChecker = () => {
           ${reportData.hasDisaster ? `
             <div class="disaster-info">
               <h3>⚠️ Active Disaster Declaration</h3>
-              <p><span class="label">AGRN:</span> ${reportData.disaster.agrn}</p>
-              <p><span class="label">Declaration:</span> ${reportData.disaster.title}</p>
-              <p><span class="label">Hazard Type:</span> ${reportData.disaster.hazardType}</p>
-              <p><span class="label">Start Date:</span> ${reportData.disaster.startDate}</p>
-              <p><span class="label">End Date:</span> ${reportData.disaster.endDate}</p>
-              <p><span class="label">Official Details:</span> <a href="${reportData.officialLink}" target="_blank">${reportData.officialLink}</a></p>
+              <p><span class="label">AGRN:</span> ${disasterInfo.agrn}</p>
+              <p><span class="label">Declaration:</span> ${disasterInfo.title}</p>
+              <p><span class="label">Hazard Type:</span> ${disasterInfo.hazardType}</p>
+              <p><span class="label">Start Date:</span> ${disasterInfo.startDate}</p>
+              <p><span class="label">End Date:</span> ${disasterInfo.endDate}</p>
+              <p><span class="label">Official Details:</span> <a href="${officialLink}" target="_blank">${officialLink}</a></p>
             </div>
           ` : `
             <div class="section">

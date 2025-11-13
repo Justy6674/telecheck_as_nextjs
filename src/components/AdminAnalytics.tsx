@@ -117,9 +117,10 @@ export const AdminAnalytics = () => {
         .gte('created_at', startDate.toISOString());
 
       const postcodeCounts = (postcodeData || []).reduce((acc: Record<string, { postcode: string; count: number; state: string }>, check) => {
-        const key = check.postcode;
+        const postcode = check.postcode ?? 'unknown';
+        const key = postcode;
         if (!acc[key]) {
-          acc[key] = { postcode: check.postcode, count: 0, state: check.state };
+          acc[key] = { postcode, count: 0, state: check.state ?? 'Unknown' };
         }
         acc[key].count++;
         return acc;
@@ -196,8 +197,18 @@ export const AdminAnalytics = () => {
         .select('*')
         .order('analysis_date', { ascending: false })
         .limit(20);
+ 
+      const sanitized = (data ?? []).map((item: any, index: number) => ({
+        id: String(item.id ?? item.analysis_id ?? `bulk-${index}`),
+        clinic_name: item.clinic_name ?? 'Unknown Clinic',
+        total_postcodes: item.total_postcodes ?? 0,
+        eligible_count: item.eligible_count ?? 0,
+        ineligible_count: item.ineligible_count ?? 0,
+        analysis_date: item.analysis_date ?? '',
+        user_id: item.user_id ?? 'unknown'
+      }));
 
-      setBulkAnalyses(data || []);
+      setBulkAnalyses(sanitized);
     } catch (error) {
       console.error('Error loading bulk analyses:', error);
     }

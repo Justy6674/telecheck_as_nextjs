@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { useOutsetaUser } from '@/hooks/useOutsetaUser';
 import { RequireFeature } from '@/components/RequireFeature';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,12 +9,12 @@ import { Button } from '@/components/ui/button';
 import { ClinicAnalysisProfessional } from '@/components/clinic/ClinicAnalysisProfessional';
 import { Upload, ArrowLeft } from 'lucide-react';
 
-export default function ClinicAnalysis() {
-  const navigate = useNavigate();
+export default function ClinicAnalysisPage() {
+  const router = useRouter();
   const { user, isLoading } = useOutsetaUser();
 
   const handleBackToDashboard = () => {
-    navigate('/members');
+    router.push('/members');
   };
 
   if (isLoading) {

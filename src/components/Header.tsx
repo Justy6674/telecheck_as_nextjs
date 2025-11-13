@@ -1,7 +1,10 @@
+'use client';
+
 import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
-import { NavLink } from "react-router-dom";
 import { ComingSoonDialog } from "@/components/ComingSoonDialog";
 import { SupportButton } from "@/components/SupportButton";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -18,63 +21,32 @@ export const Header = () => {
   const [comingSoonOpen, setComingSoonOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const linkClass = (href: string) =>
+    `text-sm transition-colors ${pathname === href ? 'text-red-400 font-medium' : 'text-white/90 hover:text-red-400'}`;
 
   const NavItems = () => (
     <>
-      <NavLink
-        to="/"
-        className={({ isActive }) =>
-          `text-sm transition-colors ${isActive ? 'text-red-400 font-medium' : 'text-white/90 hover:text-red-400'}`
-        }
-        onClick={() => setMobileMenuOpen(false)}
-      >
+      <Link href="/" className={linkClass("/")} onClick={() => setMobileMenuOpen(false)}>
         Home
-      </NavLink>
-      <NavLink
-        to="/telehealth-rules"
-        className={({ isActive }) =>
-          `text-sm transition-colors ${isActive ? 'text-red-400 font-medium' : 'text-white/90 hover:text-red-400'}`
-        }
-        onClick={() => setMobileMenuOpen(false)}
-      >
+      </Link>
+      <Link href="/telehealth-rules" className={linkClass("/telehealth-rules")} onClick={() => setMobileMenuOpen(false)}>
         Telehealth Rules
-      </NavLink>
-      <NavLink
-        to="/how-to-use"
-        className={({ isActive }) =>
-          `text-sm transition-colors ${isActive ? 'text-red-400 font-medium' : 'text-white/90 hover:text-red-400'}`
-        }
-        onClick={() => setMobileMenuOpen(false)}
-      >
+      </Link>
+      <Link href="/how-to-use" className={linkClass("/how-to-use")} onClick={() => setMobileMenuOpen(false)}>
         How to Use
-      </NavLink>
-      <NavLink
-        to="/faq"
-        className={({ isActive }) =>
-          `text-sm transition-colors ${isActive ? 'text-red-400 font-medium' : 'text-white/90 hover:text-red-400'}`
-        }
-        onClick={() => setMobileMenuOpen(false)}
-      >
+      </Link>
+      <Link href="/faq" className={linkClass("/faq")} onClick={() => setMobileMenuOpen(false)}>
         FAQ
-      </NavLink>
-      <NavLink
-        to="/about"
-        className={({ isActive }) =>
-          `text-sm transition-colors ${isActive ? 'text-red-400 font-medium' : 'text-white/90 hover:text-red-400'}`
-        }
-        onClick={() => setMobileMenuOpen(false)}
-      >
+      </Link>
+      <Link href="/about" className={linkClass("/about")} onClick={() => setMobileMenuOpen(false)}>
         About
-      </NavLink>
-      <NavLink
-        to="/pricing"
-        className={({ isActive }) =>
-          `text-sm transition-colors ${isActive ? 'text-red-400 font-medium' : 'text-white/90 hover:text-red-400'}`
-        }
-        onClick={() => setMobileMenuOpen(false)}
-      >
+      </Link>
+      <Link href="/pricing" className={linkClass("/pricing")} onClick={() => setMobileMenuOpen(false)}>
         Pricing
-      </NavLink>
+      </Link>
     </>
   );
 
@@ -82,13 +54,13 @@ export const Header = () => {
     <>
       <header className="sticky top-0 z-50 border-b border-slate-700/50 bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-slate-900/80">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Logo className="h-6 w-6" />
             <div>
               <h1 className="text-lg sm:text-xl font-bold text-white">TeleCheck</h1>
               <p className="text-xs text-white/80 hidden sm:block">Australian Telehealth Disaster Verification</p>
             </div>
-          </NavLink>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
@@ -136,7 +108,7 @@ export const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => window.location.href = '/members'}>
+                <DropdownMenuItem onClick={() => router.push('/members')}>
                   <Settings className="h-4 w-4 mr-2" />
                   Dashboard
                 </DropdownMenuItem>
@@ -207,7 +179,7 @@ export const Header = () => {
                       data-o-authenticated
                       onClick={() => {
                         setMobileMenuOpen(false);
-                        window.location.href = '/members';
+                        router.push('/members');
                       }}
                     >
                       Dashboard

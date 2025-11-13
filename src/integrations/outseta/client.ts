@@ -29,33 +29,13 @@ export interface OutsetaAccount {
   };
 }
 
-declare global {
-  interface Window {
-    Outseta: {
-      init: () => void;
-      getUser: () => Promise<OutsetaUser>;
-      getAccount: () => Promise<OutsetaAccount>;
-      logout: () => void;
-      auth: {
-        login: (email: string, password: string) => Promise<void>;
-        register: (userData: any) => Promise<void>;
-        resetPassword: (email: string) => Promise<void>;
-      };
-      profile: {
-        update: (userData: Partial<OutsetaUser>) => Promise<OutsetaUser>;
-      };
-      billing: {
-        getInvoices: () => Promise<any[]>;
-        updatePaymentMethod: () => void;
-        cancelSubscription: () => Promise<void>;
-      };
-      support: {
-        open: () => void;
-        close: () => void;
-      };
-    };
+const getOutsetaGlobal = () => {
+  if (typeof window === 'undefined') {
+    return null;
   }
-}
+
+  return (window as any).Outseta ?? null;
+};
 
 /**
  * Outseta Client Class
@@ -64,10 +44,11 @@ declare global {
 export class OutsetaClient {
   static async getCurrentUser(): Promise<OutsetaUser | null> {
     try {
-      if (!window.Outseta) {
+      const outseta = getOutsetaGlobal();
+      if (!outseta) {
         throw new Error('Outseta not loaded');
       }
-      return await window.Outseta.getUser();
+      return await outseta.getUser();
     } catch (error) {
       console.log('No authenticated user');
       return null;
@@ -76,10 +57,11 @@ export class OutsetaClient {
 
   static async getCurrentAccount(): Promise<OutsetaAccount | null> {
     try {
-      if (!window.Outseta) {
+      const outseta = getOutsetaGlobal();
+      if (!outseta) {
         throw new Error('Outseta not loaded');
       }
-      return await window.Outseta.getAccount();
+      return await outseta.getAccount();
     } catch (error) {
       console.log('No account found');
       return null;
@@ -87,63 +69,72 @@ export class OutsetaClient {
   }
 
   static async login(email: string, password: string): Promise<void> {
-    if (!window.Outseta) {
+    const outseta = getOutsetaGlobal();
+    if (!outseta) {
       throw new Error('Outseta not loaded');
     }
-    return await window.Outseta.auth.login(email, password);
+    return await outseta.auth.login(email, password);
   }
 
   static async register(userData: any): Promise<void> {
-    if (!window.Outseta) {
+    const outseta = getOutsetaGlobal();
+    if (!outseta) {
       throw new Error('Outseta not loaded');
     }
-    return await window.Outseta.auth.register(userData);
+    return await outseta.auth.register(userData);
   }
 
   static logout(): void {
-    if (window.Outseta) {
-      window.Outseta.logout();
+    const outseta = getOutsetaGlobal();
+    if (outseta) {
+      outseta.logout();
     }
   }
 
   static async updateProfile(userData: Partial<OutsetaUser>): Promise<OutsetaUser> {
-    if (!window.Outseta) {
+    const outseta = getOutsetaGlobal();
+    if (!outseta) {
       throw new Error('Outseta not loaded');
     }
-    return await window.Outseta.profile.update(userData);
+    return await outseta.profile.update(userData);
   }
 
   static async getInvoices(): Promise<any[]> {
-    if (!window.Outseta) {
+    const outseta = getOutsetaGlobal();
+    if (!outseta) {
       throw new Error('Outseta not loaded');
     }
-    return await window.Outseta.billing.getInvoices();
+    return await outseta.billing.getInvoices();
   }
 
   static updatePaymentMethod(): void {
-    if (window.Outseta) {
-      window.Outseta.billing.updatePaymentMethod();
+    const outseta = getOutsetaGlobal();
+    if (outseta) {
+      outseta.billing.updatePaymentMethod();
     }
   }
 
   static async cancelSubscription(): Promise<void> {
-    if (!window.Outseta) {
+    const outseta = getOutsetaGlobal();
+    if (!outseta) {
       throw new Error('Outseta not loaded');
     }
-    return await window.Outseta.billing.cancelSubscription();
+    return await outseta.billing.cancelSubscription();
   }
 
   static openSupportTicket(): void {
-    if (window.Outseta && window.Outseta.support) {
-      window.Outseta.support.open();
+    const outseta = getOutsetaGlobal();
+    if (outseta?.support) {
+      outseta.support.open();
     } else {
       console.warn('Outseta support widget not available');
     }
   }
 
   static closeSupportTicket(): void {
-    if (window.Outseta && window.Outseta.support) {
-      window.Outseta.support.close();
+    const outseta = getOutsetaGlobal();
+    if (outseta?.support) {
+      outseta.support.close();
     }
   }
 }

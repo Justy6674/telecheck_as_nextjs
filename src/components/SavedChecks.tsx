@@ -54,11 +54,17 @@ export const SavedChecks = () => {
       console.log('🔍 DEBUGGING SavedChecks - user?.Name:', user?.Name);
       console.log('🔍 DEBUGGING SavedChecks - full user object:', user);
 
+      if (!user?.Email) {
+        setChecks([]);
+        setLoading(false);
+        return;
+      }
+
       // Read from profiles.metadata (single source of truth)
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('metadata')
-        .eq('email', user?.Email)
+        .eq('email', user.Email)
         .single();
 
       console.log('🔍 DEBUGGING SavedChecks - profile query result:', { profile, error });
@@ -68,7 +74,10 @@ export const SavedChecks = () => {
       }
 
       // Extract saved searches from metadata
-      const savedSearches = profile?.metadata?.saved_searches || [];
+      const currentMetadata = (profile?.metadata as Record<string, unknown>) || {};
+      const savedSearches = Array.isArray((currentMetadata as any).saved_searches)
+        ? ((currentMetadata as any).saved_searches as SavedCheck[])
+        : [];
       console.log('🔍 DEBUGGING SavedChecks - found', savedSearches.length, 'saved checks in metadata');
 
       setChecks(savedSearches);
@@ -86,22 +95,33 @@ export const SavedChecks = () => {
 
   const deleteCheck = async (id: string) => {
     try {
+      if (!user?.Email) {
+        toast({
+          title: 'Authentication Required',
+          description: 'Sign in to modify saved checks',
+          variant: 'destructive'
+        });
+        return;
+      }
+
       // Get current profile metadata
       const { data: profile, error: fetchError } = await supabase
         .from('profiles')
         .select('metadata')
-        .eq('email', user?.Email)
+        .eq('email', user.Email)
         .single();
 
       if (fetchError) throw fetchError;
 
       // Remove the specific check from saved_searches
-      const currentMetadata = profile?.metadata || {};
-      const existingSavedSearches = currentMetadata.saved_searches || [];
+      const currentMetadata = (profile?.metadata as Record<string, unknown>) || {};
+      const existingSavedSearches = Array.isArray((currentMetadata as any).saved_searches)
+        ? ((currentMetadata as any).saved_searches as SavedCheck[])
+        : [];
       const updatedSavedSearches = existingSavedSearches.filter((check: SavedCheck) => check.id !== id);
 
       // Update the metadata
-      const updatedMetadata = {
+      const updatedMetadata: Record<string, unknown> = {
         ...currentMetadata,
         saved_searches: updatedSavedSearches
       };
@@ -110,10 +130,10 @@ export const SavedChecks = () => {
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          metadata: updatedMetadata,
+          metadata: updatedMetadata as any,
           updated_at: new Date().toISOString()
         })
-        .eq('email', user?.Email);
+        .eq('email', user.Email);
 
       if (updateError) throw updateError;
 
@@ -293,7 +313,7 @@ export const SavedChecks = () => {
                         size="sm"
                         variant="outline"
                         className="border-green-400/50 text-green-300 hover:bg-green-500/20"
-                        onClick={() => copyProforma(check.notes)}
+                        onClick={() => copyProforma(check.notes ?? null)}
                       >
                         <Copy className="h-3 w-3 mr-1" />
                         Copy Clinical Notes

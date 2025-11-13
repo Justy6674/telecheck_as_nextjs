@@ -54,8 +54,8 @@ export const AdminScraperControl = () => {
         const lastLog = logs[0];
         setStatus({
           isRunning: lastLog.status === 'started',
-          lastRun: lastLog.completed_at || lastLog.started_at,
-          lastError: lastLog.error_message
+          lastRun: lastLog.completed_at ?? lastLog.started_at ?? undefined,
+          lastError: lastLog.error_message ?? undefined
         });
       }
 

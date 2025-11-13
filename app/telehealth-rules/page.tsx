@@ -307,3 +307,5 @@ export const TelehealthRules = () => {
     </div>
   );
 };
+
+export default TelehealthRules;

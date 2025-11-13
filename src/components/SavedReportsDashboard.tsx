@@ -69,6 +69,8 @@ interface SavedReport {
   major_cities_count: number;
   remote_count: number;
   very_remote_count: number;
+  analysis_data?: any;
+  report_data?: any;
 }
 
 interface ClinicProfile {
@@ -98,7 +100,7 @@ export const SavedReportsDashboard = () => {
 
     try {
       let query = supabase
-        .from('user_reports_outseta')
+        .from('user_reports_outseta' as any)
         .select('*')
         .eq('user_email', user.Email)
         .order('created_at', { ascending: false });
@@ -144,8 +146,18 @@ export const SavedReportsDashboard = () => {
 
       if (error) throw error;
 
+      const normalizedData = (data ?? []).map((report: any) => {
+        const reportData = (report.report_data ?? {}) as Record<string, any>;
+        return {
+          ...report,
+          clinic_name: report.clinic_name ?? reportData.clinic_name ?? 'Unknown Clinic',
+          clinic_identifier: report.clinic_identifier ?? reportData.clinic_identifier ?? '',
+          clinic_location: report.clinic_location ?? reportData.clinic_location ?? ''
+        };
+      });
+
       // Apply search filter
-      let filteredData = data || [];
+      let filteredData = normalizedData;
       if (searchTerm) {
         filteredData = filteredData.filter(report =>
           report.clinic_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -173,13 +185,13 @@ export const SavedReportsDashboard = () => {
 
     try {
       const { data, error } = await supabase
-        .from('user_clinics_outseta')
+        .from('user_clinics_outseta' as any)
         .select('*')
         .eq('user_email', user.Email)
         .order('last_used', { ascending: false });
 
       if (error) throw error;
-      setClinics(data as ClinicProfile[] || []);
+      setClinics((data as unknown as ClinicProfile[]) ?? []);
     } catch (error) {
       console.error('Error loading clinics:', error);
     }
@@ -189,7 +201,7 @@ export const SavedReportsDashboard = () => {
   const toggleStar = async (reportId: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
-        .from('user_reports_outseta')
+        .from('user_reports_outseta' as any)
         .update({ is_starred: !currentStatus })
         .eq('id', reportId);
 
@@ -217,7 +229,7 @@ export const SavedReportsDashboard = () => {
 
     try {
       const { error } = await supabase
-        .from('user_reports_outseta')
+        .from('user_reports_outseta' as any)
         .delete()
         .eq('id', reportId);
 

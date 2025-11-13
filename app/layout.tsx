@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import "@/src/index.css";
-import { Toaster } from "@/src/components/ui/toaster";
-import { Toaster as Sonner } from "@/src/components/ui/sonner";
-import { TooltipProvider } from "@/src/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/src/hooks/useAuth";
-import { ThemeProvider } from "@/src/contexts/ThemeContext";
-import "@/src/utils/emailProcessor";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import "@/utils/emailProcessor";
 import ClientProviders from "./client-providers";
 
 const inter = Inter({ subsets: ['latin'] });

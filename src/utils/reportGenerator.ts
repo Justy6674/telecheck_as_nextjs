@@ -4,7 +4,14 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import { createClient } from '@supabase/supabase-js';
+
+type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json }
+  | Json[];
 
 interface AnalysisResult {
   totalPatients: number;
@@ -134,8 +141,8 @@ export async function saveClinicReport(
       last_5_years: analysisResult.timeBasedAnalysis?.over24Months?.count || 0,
       
       // JSONB fields for complete data
-      raw_data: analysisResult, // CRITICAL: Complete analysis for PDF generation
-      state_breakdown: analysisResult.stateDistribution || {},
+      raw_data: analysisResult as unknown as Json, // CRITICAL: Complete analysis for PDF generation
+      state_breakdown: (analysisResult.stateDistribution || {}) as unknown as Json,
       
       // Optional metadata
       is_starred: false,

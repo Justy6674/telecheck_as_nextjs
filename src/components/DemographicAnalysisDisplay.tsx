@@ -52,6 +52,8 @@ export const DemographicAnalysisDisplay: React.FC<DemographicAnalysisDisplayProp
   const nonDisasterPatients = totalPatients - eligiblePatients;
   const eligibilityRate = analysisData?.eligiblePercentage || 0;
   const timeBasedAnalysis = analysisData?.timeBasedAnalysis || {};
+  const strongProtectionCount = (timeBasedAnalysis.last12Months?.count ?? 0) + (timeBasedAnalysis.last2Years?.count ?? 0);
+  const reviewNeededCount = (timeBasedAnalysis.last5Years?.count ?? 0) + (timeBasedAnalysis.olderThan5Years?.count ?? 0);
   
   // Extract demographic data from the analysis
   const demographicData = analysisData?.demographicAnalysis || {};
@@ -347,11 +349,11 @@ export const DemographicAnalysisDisplay: React.FC<DemographicAnalysisDisplayProp
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="font-medium text-green-700 dark:text-green-300">✓ Strong Protection ({timeBasedAnalysis?.last12Months?.count + timeBasedAnalysis?.last2Years?.count || 0} patients)</p>
+                <p className="font-medium text-green-700 dark:text-green-300">✓ Strong Protection ({strongProtectionCount} patients)</p>
                 <p className="text-muted-foreground">Recent disaster declarations provide excellent audit protection</p>
               </div>
               <div>
-                <p className="font-medium text-yellow-700 dark:text-yellow-300">⚠ Review Needed ({timeBasedAnalysis?.last5Years?.count + timeBasedAnalysis?.olderThan5Years?.count || 0} patients)</p>
+                <p className="font-medium text-yellow-700 dark:text-yellow-300">⚠ Review Needed ({reviewNeededCount} patients)</p>
                 <p className="text-muted-foreground">Older declarations may need additional documentation</p>
               </div>
             </div>

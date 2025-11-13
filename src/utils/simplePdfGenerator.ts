@@ -258,9 +258,12 @@ export function generateSimplePDF(clinicName: string, analysisData: AnalysisData
       { name: 'Very Remote', color: [139, 92, 246] }        // Purple
     ];
 
+    const remotenessBreakdown = (analysisData.nationalRemotenessBreakdown ??
+      {}) as Record<string, number>;
+
     doc.setFontSize(8);
     remotenessOrder.forEach((category, i) => {
-      const count = analysisData.nationalRemotenessBreakdown[category.name] || 0;
+      const count = remotenessBreakdown[category.name] || 0;
       const col = i % 3; // 3 columns for better layout
       const row = Math.floor(i / 3);
       const boxWidth = 58; // Same as state boxes

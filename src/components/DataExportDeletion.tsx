@@ -46,7 +46,9 @@ export const DataExportDeletion: React.FC = () => {
       };
 
       // Remove sensitive fields
-      delete userData.profile?.id;
+      if (userData.profile && typeof userData.profile === 'object' && 'id' in userData.profile) {
+        delete (userData.profile as Record<string, unknown>).id;
+      }
       
       // Download as JSON
       const blob = new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });

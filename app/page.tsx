@@ -2,24 +2,24 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
-import { Badge } from "@/src/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Activity, Shield, Zap, Users, Clock, CheckCircle, ArrowRight, ArrowDown, ArrowUp, Phone, Monitor, Stethoscope, Settings, MapPin, FileText, AlertTriangle, ChevronLeft, ChevronRight, ChevronDown, Heart } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/src/components/ui/collapsible";
-import { ComingSoonDialog } from "@/src/components/ComingSoonDialog";
-import { AuthDialog } from "@/src/components/AuthDialog";
-import { LoginDialog } from "@/src/components/LoginDialog";
-import AdminPanel from "@/src/components/AdminPanel";
-import { LiveInTwoWeeksDialog } from "@/src/components/LiveInTwoWeeksDialog";
-import { useAuth } from "@/src/hooks/useAuth";
-import { Header } from "@/src/components/Header";
-import { Footer } from "@/src/components/Footer";
-import { Logo } from "@/src/components/Logo";
-import { BWHero } from "@/src/components/BWHero";
-import { MiniDisasterCounter } from "@/src/components/MiniDisasterCounter";
-import PatientEligibilityChecker from "@/src/components/PatientEligibilityChecker";
-import { supabase } from "@/src/integrations/supabase/client";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ComingSoonDialog } from "@/components/ComingSoonDialog";
+import { AuthDialog } from "@/components/AuthDialog";
+import { LoginDialog } from "@/components/LoginDialog";
+import AdminPanel from "@/components/AdminPanel";
+import { LiveInTwoWeeksDialog } from "@/components/LiveInTwoWeeksDialog";
+import { useAuth } from "@/hooks/useAuth";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { Logo } from "@/components/Logo";
+import { BWHero } from "@/components/BWHero";
+import { MiniDisasterCounter } from "@/components/MiniDisasterCounter";
+import PatientEligibilityChecker from "@/components/PatientEligibilityChecker";
+import { supabase } from "@/integrations/supabase/client";
 
 // Hero image from Supabase Storage
 const HERO_IMAGE_URL = "https://pkixezdlbmzntwekchoq.supabase.co/storage/v1/object/public/hero-images/TCHeroFrontPage.png";
@@ -761,3 +761,5 @@ export const Landing = () => {
     </div>
   );
 };
+
+export default Landing;

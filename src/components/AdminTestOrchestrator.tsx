@@ -181,11 +181,12 @@ export const AdminTestOrchestrator = () => {
     } catch (error) {
       run.endTime = new Date().toISOString();
       run.status = 'failed';
-      run.errors = [error.message];
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      run.errors = [message];
 
       toast({
         title: 'Test Failed',
-        description: `${schedule.name} failed: ${error.message}`,
+        description: message,
         variant: 'destructive'
       });
     }

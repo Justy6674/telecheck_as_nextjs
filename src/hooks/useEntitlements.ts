@@ -1,3 +1,5 @@
+'use client';
+
 import { useOutsetaUser } from './useOutsetaUser';
 
 export interface Entitlements {
@@ -30,7 +32,7 @@ export function useEntitlements() {
   }
 
   // Check if user is admin
-  const isAdmin = user.email === 'doenscale@icloud.com';
+  const isAdmin = (user.Email || '').toLowerCase() === 'doenscale@icloud.com';
 
   // CRITICAL FIX: All authenticated users are considered professional users
   // Since hasActiveSubscription is true for all authenticated users in useOutsetaUser

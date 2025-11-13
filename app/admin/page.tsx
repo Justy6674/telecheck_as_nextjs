@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/integrations/supabase/client';
-import { AdminTabs } from '../components/AdminTabs';
+import { AdminTabs } from '@/components/AdminTabs';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 export default function Admin() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 py-8">
@@ -18,9 +18,9 @@ export default function Admin() {
             <h1 className="text-4xl font-bold text-white mb-2">🔐 TeleCheck Admin Control Center</h1>
             <p className="text-white/80">Comprehensive platform management, monitoring, and control</p>
           </div>
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/members')}
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/members')}
             className="text-white hover:bg-white/10"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

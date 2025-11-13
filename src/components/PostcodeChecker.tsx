@@ -131,14 +131,14 @@ export const PostcodeChecker: React.FC<PostcodeCheckerProps> = ({ proformaType: 
   };
 
   const logVerificationUsage = async (result: EligibilityResult) => {
-    if (!user?.Uid || !user?.Email) return;
+    if (!user?.PersonUid || !user?.Email) return;
 
     try {
       const agrns = result.disasters?.map(d => d.agrn).filter(Boolean) || [];
       const sourceUrls = (result.disasters?.map(d => d.url).filter((u): u is string => Boolean(u)) ?? []);
 
       await supabase.from('verification_usage').insert({
-        user_id: user.Uid,
+        user_id: user.PersonUid,
         email: user.Email,
         postcode: result.postcode,
         state: result.state,
@@ -166,7 +166,7 @@ export const PostcodeChecker: React.FC<PostcodeCheckerProps> = ({ proformaType: 
       return;
     }
 
-    if (!user?.id || !user?.email) {
+    if (!user?.PersonUid || !user?.Email) {
       toast({
         title: 'Authentication Required',
         description: 'Please sign in to subscribe',
@@ -333,8 +333,10 @@ export const PostcodeChecker: React.FC<PostcodeCheckerProps> = ({ proformaType: 
           }
 
           // Get existing metadata or create new
-          const currentMetadata = profile?.metadata || {};
-          const existingSavedSearches = currentMetadata.saved_searches || [];
+          const currentMetadata = (profile?.metadata as Record<string, unknown>) || {};
+          const existingSavedSearches = Array.isArray((currentMetadata as any).saved_searches)
+            ? ((currentMetadata as any).saved_searches as any[])
+            : [];
 
           // Add new search to the beginning of the array
           const updatedSavedSearches = [savedSearch, ...existingSavedSearches];

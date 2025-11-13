@@ -76,16 +76,20 @@ export const AdminSecurity = () => {
         .limit(50);
 
       // Transform audit logs to access logs format
-      const formattedAccessLogs: AccessLog[] = (auditData || []).map(log => ({
-        id: log.id,
-        user_id: log.user_id || 'anonymous',
-        action: log.event_type,
-        resource_type: log.resource_type || 'unknown',
-        resource_id: log.resource_id || '',
-        ip_address: (log.ip_address as string) || null,
-        user_agent: log.user_agent || 'unknown',
-        created_at: log.created_at
-      }));
+      const formattedAccessLogs: AccessLog[] = (auditData || []).map(log => {
+        const metadata = (log.metadata ?? {}) as Record<string, unknown>;
+        return {
+          id: log.id,
+          user_id: log.user_id || 'anonymous',
+          action: log.event_type,
+          resource_type: log.resource_type || 'unknown',
+          resource_id: log.resource_id || 'unknown',
+          ip_address: typeof log.ip_address === 'string' ? log.ip_address : 'unknown',
+          user_agent: typeof log.user_agent === 'string' ? log.user_agent : 'unknown',
+          created_at: log.created_at ?? new Date().toISOString(),
+          user_email: typeof metadata.user_email === 'string' ? (metadata.user_email as string) : undefined
+        };
+      });
 
       setAccessLogs(formattedAccessLogs);
 

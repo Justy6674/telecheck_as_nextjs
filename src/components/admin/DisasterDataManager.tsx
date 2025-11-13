@@ -90,10 +90,11 @@ export function DisasterDataManager() {
         });
       }
     } catch (error) {
-      console.error('Scan error:', error);
+      console.error('Error running disaster scan:', error);
+      const message = error instanceof Error ? error.message : 'Unexpected error occurred';
       toast({
         title: "Scan Failed",
-        description: error.message,
+        description: message,
         variant: "destructive"
       });
     } finally {
@@ -134,9 +135,10 @@ export function DisasterDataManager() {
       }
     } catch (error) {
       console.error('Apply error:', error);
+      const message = error instanceof Error ? error.message : 'Unexpected error occurred';
       toast({
         title: "Failed to Apply Changes",
-        description: error.message,
+        description: message,
         variant: "destructive"
       });
     } finally {
